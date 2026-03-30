@@ -75,8 +75,8 @@ module tb_control_unit;
 
 	initial begin
 		// dump waves for gtkwave (comment out for vivado)
-		$dumpfile("tb_control_unit.vcd");
-		$dumpvars(0, tb_control_unit);
+		// $dumpfile("tb_control_unit.vcd");
+		// $dumpvars(0, tb_control_unit);
 
 		pass_count = 0;
 		fail_count = 0;
