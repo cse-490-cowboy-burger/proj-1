@@ -1,7 +1,6 @@
 // main control unit for 16bit single cycle processor
 //
-// right now this only handles lw and sw
-// everything else gets safe defaults (no writes to anything)
+// currently handles: lw, sw, R-type (add/sub/sll/and), addi
 // other instructions will get added later as the team builds them out
 //
 // opcode reference:
@@ -32,10 +31,10 @@ module control_unit (
 	output reg			target_src	// 0 = branch offset  1 = jump offset
 );
 
+	parameter OP_RTYPE = 4'b0000;
 	parameter OP_LW    = 4'b0001;
 	parameter OP_SW    = 4'b0010;
-	// parameter OP_RTYPE = 4'b0000;
-	// parameter OP_ADDI  = 4'b0011;
+	parameter OP_ADDI  = 4'b0011;
 	// parameter OP_BEQ   = 4'b0100;
 	// parameter OP_BNE   = 4'b0101;
 	// parameter OP_JMP   = 4'b0110;
@@ -67,13 +66,19 @@ module control_unit (
 				alu_op		= 2'b00;	// alu does add (base + offset)
 			end
 
-			// OP_RTYPE: begin
+			OP_RTYPE: begin
+				reg_write	= 1;		// R-type writes result back to rt/rd
+				alu_op		= 2'b10;	// tell ALU control to look at funct field
+				// alu_src stays 0 (both operands from reg file)
+				// mem_to_reg stays 0 (writeback from ALU not memory)
+			end
 
-			// end
-
-			// OP_ADDI: begin
-			
-			// end
+			OP_ADDI: begin
+				reg_write	= 1;		// write sum back to rt/rd
+				alu_src		= 1;		// second ALU input is sign-extended immediate
+				alu_op		= 2'b00;	// ALU does add
+				// mem_to_reg stays 0 (writeback from ALU)
+			end
 
 			// OP_BEQ: begin
 
